@@ -83,8 +83,8 @@ You are simulating a group discussion with TWO AI participants.
 
 STRICT JSON OUTPUT ONLY:
 {
-  "agent1": "text...",
-  "agent2": "text..."
+  "Player 1": "text...",
+  "Player 2": "text..."
 }
 
 RULES:
@@ -134,13 +134,13 @@ You are simulating a real GD with 2 AI participants.
 
 STRICT JSON OUTPUT ONLY:
 {
-  "agent1": "text...",
-  "agent2": "text..."
+  "Player 1": "text...",
+  "Player 2": "text..."
 }
 
 Participants:
-- Agent 1 = aggressive debater
-- Agent 2 = logical analyst
+- Player 1 = aggressive debater
+- Player 2 = logical analyst
 
 Topic: ${topic}
 
@@ -151,7 +151,7 @@ User just said:
 ${userSpeech}
 
 Continue the GD discussion.
-Keep responses short (2–3 lines).
+Keep responses short (4–5 lines).
 `;
 
     const response = await axios.post(
