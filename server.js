@@ -8,18 +8,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Random topics
+// Utility: Safe JSON parsing (Groq sometimes adds extra text)
+function safeJSON(text) {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    return JSON.parse(text.slice(start, end + 1));
+  }
+}
+
+// Random fallback topics (not used anymore)
 const topics = [
   "Is AI a threat or an opportunity?",
   "Impact of social media on youth",
   "Should remote work continue?",
   "Is India ready for electric vehicles?",
   "Will robots replace humans in jobs?",
-  "Does technology make people isolated?"
+  "Does technology make people isolated?",
 ];
 
-// 1️⃣ API to get a random topic AND AI agents speak first
-// 1️⃣ API to get a REAL-TIME TRENDING GD TOPIC + agent opening
+
+// 1️⃣ API: Start GD → Generate topic + 2 AI opening responses
 app.get("/api/start-gd", async (req, res) => {
   try {
     const topicPrompt = `
@@ -33,23 +44,14 @@ based on:
 - society
 - AI
 Technology
-
 Global Issues
-
 India Current Affairs
-
 Business & Economy
-
 Ethics & Morality
-
 Society & Culture
-
 Artificial Intelligence & Future Tech
-
 Abstract Thinking & Creative Themes
-
 Sustainability & Environment
-
 Geopolitics & International Relations
 
 STRICT JSON OUTPUT:
@@ -58,7 +60,7 @@ STRICT JSON OUTPUT:
 }
 `;
 
-    // Fetch trending topics dynamically
+    // Step 1: Generate trending topics
     const topicResponse = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
@@ -69,15 +71,14 @@ STRICT JSON OUTPUT:
       { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
     );
 
-    // Parse trending topics
-    const trendingTopics = JSON.parse(
+    const trendingTopics = safeJSON(
       topicResponse.data.choices[0].message.content
     ).topics;
 
-    // Pick a random topic from generated list
-    const topic = trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
+    const topic =
+      trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
 
-    // Now run Agent Opening using the chosen topic
+    // Step 2: Agents opening statements
     const prompt = `
 You are simulating a group discussion with TWO AI participants.
 
@@ -92,8 +93,8 @@ RULES:
 - Keep responses short (2–3 lines).
 - No greetings like "Hello".
 - Start directly with your viewpoint.
-- Agent 1: aggressive debater
-- Agent 2: calm logical analyst
+- Player 1: aggressive debater
+- Player 2: calm logical analyst
 
 Topic: ${topic}
 `;
@@ -110,9 +111,8 @@ Topic: ${topic}
 
     return res.json({
       topic,
-      agents: JSON.parse(response.data.choices[0].message.content),
+      agents: safeJSON(response.data.choices[0].message.content),
     });
-
   } catch (err) {
     console.log("AI ERROR:", err.response?.data || err.message);
     res.status(500).json({ error: "Startup AI error" });
@@ -120,13 +120,15 @@ Topic: ${topic}
 });
 
 
-// 2️⃣ API for turn-taking after user speaks
+
+// 2️⃣ API: Continue GD after user speaks (turn-by-turn)
 app.post("/api/gd", async (req, res) => {
   try {
     const { userSpeech, topic, history } = req.body;
 
+    // Convert history → text transcript
     const transcript = history
-      .map((m) => `${m.speaker}: ${m.text}`)
+      .map((m) => `${m.speaker.replace("Agent", "Player")}: ${m.text}`)
       .join("\n");
 
     const prompt = `
@@ -157,21 +159,21 @@ Keep responses short (4–5 lines).
     const response = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-       model: "llama-3.3-70b-versatile",
-
-
+        model: "llama-3.3-70b-versatile",
         response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
       },
       { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
     );
 
-    res.json(JSON.parse(response.data.choices[0].message.content));
-
+    res.json(safeJSON(response.data.choices[0].message.content));
   } catch (err) {
     console.log("AI ERROR:", err.response?.data || err.message);
     res.status(500).json({ error: "Turn error" });
   }
 });
 
+
+
+// Start Server
 app.listen(5000, () => console.log("Backend running on 5000"));
