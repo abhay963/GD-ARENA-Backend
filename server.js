@@ -2,158 +2,204 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
+import googleTrends from "google-trends-api";
 
 dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Utility: Safe JSON parsing (Groq sometimes adds extra text)
+/* --------------------------------------------------
+   Utility: Safe JSON parser
+--------------------------------------------------- */
 function safeJSON(text) {
   try {
     return JSON.parse(text);
-  } catch (e) {
+  } catch {
     const start = text.indexOf("{");
     const end = text.lastIndexOf("}");
     return JSON.parse(text.slice(start, end + 1));
   }
 }
 
-// Random fallback topics (not used anymore)
-const topics = [
-  "Is AI a threat or an opportunity?",
-  "Impact of social media on youth",
-  "Should remote work continue?",
-  "Is India ready for electric vehicles?",
-  "Will robots replace humans in jobs?",
-  "Does technology make people isolated?",
+/* --------------------------------------------------
+   GD CATEGORIES (PLACEMENT-GRADE)
+--------------------------------------------------- */
+const GD_CATEGORIES = [
+  "Social Issues",
+  "Current Affairs",
+  "Business & Economy",
+  "Technology",
+  "Ethics & Morality",
+  "Environment & Sustainability",
+  "Abstract & Philosophical"
 ];
 
+let categoryIndex = 0;
 
-// 1️⃣ API: Start GD → Generate topic + 2 AI opening responses
-app.get("/api/start-gd", async (req, res) => {
+function getNextCategory() {
+  const category = GD_CATEGORIES[categoryIndex];
+  categoryIndex = (categoryIndex + 1) % GD_CATEGORIES.length;
+  return category;
+}
+
+/* --------------------------------------------------
+   STEP 1: Fetch Google Trends (India)
+--------------------------------------------------- */
+async function getTrendingTopics() {
   try {
-    const topicPrompt = `
-Generate 10 latest trending and unique Group Discussion topics
-based on:
-- technology
-- global issues
-- India current affairs
-- business
-- ethics
-- society
-- AI
-Technology
-Global Issues
-India Current Affairs
-Business & Economy
-Ethics & Morality
-Society & Culture
-Artificial Intelligence & Future Tech
-Abstract Thinking & Creative Themes
-Sustainability & Environment
-Geopolitics & International Relations
+    const res = await googleTrends.dailyTrends({ geo: "IN" });
+    const data = JSON.parse(res);
 
-STRICT JSON OUTPUT:
+    return data.default.trendingSearchesDays[0].trendingSearches
+      .slice(0, 10)
+      .map(t => t.title.query);
+  } catch (err) {
+    console.error("Google Trends failed:", err.message);
+
+    // HARD FALLBACK (never crash)
+    return [
+      "India economic growth",
+      "Youth unemployment",
+      "Climate change policy",
+      "Startup ecosystem",
+      "Digital privacy"
+    ];
+  }
+}
+
+/* --------------------------------------------------
+   STEP 2: Generate GD topic (CATEGORY ENFORCED)
+--------------------------------------------------- */
+async function generateGDTopic(trends) {
+  const category = getNextCategory();
+
+  const prompt = `
+You are generating a GROUP DISCUSSION topic.
+
+CATEGORY (STRICT): ${category}
+
+Use ONE of the following REAL trending searches
+ONLY as background context (do NOT mention them):
+
+${trends.join("\n")}
+
+Rules:
+- Topic MUST belong to the given CATEGORY
+- Suitable for campus placements
+- Debatable (multiple viewpoints)
+- No yes/no framing
+- Avoid AI topics unless category is Technology
+- Sound like a real GD panel question
+
+STRICT JSON:
 {
-  "topics": ["topic1", "topic2", ...]
+  "category": "${category}",
+  "topic": "..."
 }
 `;
 
-    // Step 1: Generate trending topics
-    const topicResponse = await axios.post(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        model: "llama-3.3-70b-versatile",
-        response_format: { type: "json_object" },
-        messages: [{ role: "user", content: topicPrompt }],
+  const response = await axios.post(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      model: "llama-3.3-70b-versatile",
+      response_format: { type: "json_object" },
+      messages: [{ role: "user", content: prompt }],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
-      { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
-    );
+    }
+  );
 
-    const trendingTopics = safeJSON(
-      topicResponse.data.choices[0].message.content
-    ).topics;
-
-    const topic =
-      trendingTopics[Math.floor(Math.random() * trendingTopics.length)];
-
-    // Step 2: Agents opening statements
-    const prompt = `
-You are simulating a group discussion with TWO AI participants.
-
-STRICT JSON OUTPUT ONLY:
-{
-  "Player 1": "text...",
-  "Player 2": "text..."
+  return safeJSON(response.data.choices[0].message.content);
 }
 
-RULES:
-- Respond as if it's the opening of a GD.
-- Keep responses short (2–3 lines).
-- No greetings like "Hello".
-- Start directly with your viewpoint.
+/* --------------------------------------------------
+   API 1️⃣: START GD
+--------------------------------------------------- */
+app.get("/api/start-gd", async (req, res) => {
+  try {
+    const trends = await getTrendingTopics();
+    const { topic, category } = await generateGDTopic(trends);
+
+    const openingPrompt = `
+Simulate a Group Discussion opening with TWO AI participants.
+
+STRICT JSON:
+{
+  "Player 1": "text",
+  "Player 2": "text"
+}
+
+Rules:
+- 2–3 lines each
+- No greetings
 - Player 1: aggressive debater
 - Player 2: calm logical analyst
 
 Topic: ${topic}
 `;
 
-    const response = await axios.post(
+    const openingRes = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
         model: "llama-3.3-70b-versatile",
         response_format: { type: "json_object" },
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "user", content: openingPrompt }],
       },
-      { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+      }
     );
 
-    return res.json({
+    res.json({
+      category,
       topic,
-      agents: safeJSON(response.data.choices[0].message.content),
+      agents: safeJSON(openingRes.data.choices[0].message.content),
     });
-  } catch (err) {
-    console.log("AI ERROR:", err.response?.data || err.message);
-    res.status(500).json({ error: "Startup AI error" });
+
+  } catch (error) {
+    console.error("START GD ERROR:", error.message);
+    res.status(500).json({ error: "Failed to start GD" });
   }
 });
 
-
-
-// 2️⃣ API: Continue GD after user speaks (turn-by-turn)
+/* --------------------------------------------------
+   API 2️⃣: CONTINUE GD
+--------------------------------------------------- */
 app.post("/api/gd", async (req, res) => {
   try {
     const { userSpeech, topic, history } = req.body;
 
-    // Convert history → text transcript
     const transcript = history
-      .map((m) => `${m.speaker.replace("Agent", "Player")}: ${m.text}`)
+      .map(h => `${h.speaker}: ${h.text}`)
       .join("\n");
 
     const prompt = `
-You are simulating a real GD with 2 AI participants.
+Continue the Group Discussion with TWO AI participants.
 
-STRICT JSON OUTPUT ONLY:
+STRICT JSON:
 {
-  "Player 1": "text...",
-  "Player 2": "text..."
+  "Player 1": "text",
+  "Player 2": "text"
 }
-
-Participants:
-- Player 1 = aggressive debater
-- Player 2 = logical analyst
 
 Topic: ${topic}
 
-DISCUSSION SO FAR:
+Discussion so far:
 ${transcript}
 
 User just said:
 ${userSpeech}
 
-Continue the GD discussion.
-Keep responses short (4–5 lines).
+Rules:
+- 4–5 lines max
+- Realistic GD tone
 `;
 
     const response = await axios.post(
@@ -163,17 +209,25 @@ Keep responses short (4–5 lines).
         response_format: { type: "json_object" },
         messages: [{ role: "user", content: prompt }],
       },
-      { headers: { Authorization: `Bearer ${process.env.GROQ_API_KEY}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+      }
     );
 
     res.json(safeJSON(response.data.choices[0].message.content));
-  } catch (err) {
-    console.log("AI ERROR:", err.response?.data || err.message);
-    res.status(500).json({ error: "Turn error" });
+
+  } catch (error) {
+    console.error("GD TURN ERROR:", error.message);
+    res.status(500).json({ error: "GD turn failed" });
   }
 });
 
-
-
-// Start Server
-app.listen(5000, () => console.log("Backend running on 5000"));
+/* --------------------------------------------------
+   START SERVER
+--------------------------------------------------- */
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 GD Backend running on port ${PORT}`);
+});
