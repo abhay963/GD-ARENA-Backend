@@ -26,6 +26,44 @@ function safeJSON(text) {
    FIXED GD TOPICS (CLASSIC PLACEMENT QUESTIONS)
 --------------------------------------------------- */
 const GD_TOPICS = [
+   "Will AI replace engineers?",
+  "5G technology and its impact on smart cities",
+  "Quantum computing: Threat or opportunity?",
+  "Is blockchain technology beyond cryptocurrency?",
+  "The rise of electric vehicles: Can India become a global EV hub?",
+  "Space tourism: The future of engineering innovation?",
+  "Metaverse: Real opportunity or just a buzzword?",
+  "Internet of Things (IoT): Boon or threat to personal privacy?",
+  "Cybersecurity: Are engineers doing enough?",
+  "Robotics in manufacturing: Job killer or job creator?",
+
+  /* -------- Environment & Sustainability -------- */
+  "Green engineering: The need of the hour",
+  "Can India achieve net-zero emissions by 2070?",
+  "Is nuclear energy safe and sustainable?",
+  "Engineering solutions for climate change",
+  "Smart infrastructure vs natural preservation",
+
+  /* -------- Career & Education -------- */
+  "Should coding be mandatory for all engineering streams?",
+  "Are Indian engineering students industry-ready?",
+  "Internships vs research: What is more valuable?",
+  "Tier-1 vs Tier-3 college students: Who has better placement opportunities?",
+  "Startup culture among engineering students: Encouraged or overhyped?",
+
+  /* -------- Ethics & Society -------- */
+  "Ethics in artificial intelligence: Who is accountable?",
+  "Is social media damaging technical creativity?",
+  "Should engineers have mandatory social service internships?",
+  "Technology vs ethics: Where should we draw the line?",
+  "Engineering brain drain: Is it still a problem in India?",
+
+  /* -------- Current Affairs -------- */
+  "Impact of AI tools like ChatGPT on engineering education",
+  "India’s Moon and Mars missions: National pride or misplaced priorities?",
+  "UPI going global: Can Indian fintech lead the world?",
+  "Global tech layoffs: Lessons for Indian engineers",
+  "Rise of deepfake technology: Should it be banned?",
   "Are beauty contests degrading womanhood?",
   "Our culture is decaying",
   "Educational qualification for politics",
