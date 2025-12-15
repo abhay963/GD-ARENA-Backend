@@ -26,35 +26,6 @@ function safeJSON(text) {
    FIXED GD TOPICS (CLASSIC PLACEMENT QUESTIONS)
 --------------------------------------------------- */
 const GD_TOPICS = [
-  "Impact of Social Networking Sites",
-  "Is Social Media Actually Connecting People?",
-  "Tobacco must be banned. Yes or No.",
-  "Mars Mission for India Justified?",
-  "Is India ready for Electric Vehicles?",
-  "Walmart and Flipkart Deal: Impact on Indian Economy",
-  "Role of Engineers in Disaster Management",
-  "Which is more important: Creativity or Efficiency?",
-  "Should India have a One Child Policy?",
-  "Farmers' Income: Will India be able to double it in next 5 years?",
-  "Difficulties in Implementation of Climate Change Summit Resolutions",
-  "Gold Monetization Scheme",
-  "Regional languages in India are fading out in today's world.",
-  "Should Triple Talaq be Banned in India or Not?",
-  "Will Indian economy grow faster with reduced Goods and Services Tax (GST)?",
-  "Is GST really a One nation, One tax system?",
-  "Make in India vs Make for India",
-  "Black Money in India",
-  "Future of Sports in India",
-  "Future of Crypto Currencies",
-  "Is the World Ready for Cashless Currency?",
-  "Demonetisation has reduced Corruption, Black Money and Terrorism?",
-  "Education industry is a business these days.",
-  "Whether Digital Education has taken over Traditional Education?",
-  "Impact of Technology on Jobs",
-  "Making Aadhaar Mandatory: Benefits and Drawbacks",
-  "Is the Aadhaar database secured enough?",
-  "Merits and Demerits of Cashless Economy",
-  "Digital India: Whom Does it Benefit?",
   "Are beauty contests degrading womanhood?",
   "Our culture is decaying",
   "Educational qualification for politics",
@@ -118,7 +89,7 @@ const GD_TOPICS = [
   "Budget cycle change: Reform or convenience?",
   "Bank recapitalization vs NPA reduction",
   "GST: Will the economy grow faster with reduced tax rates?",
-  "Farmers’ income: Can India double it?",
+  "Farmers' income: Can India double it?",
   "Privatization of the Indian economy",
   "High deficit financing vs high interest rates",
   "Merging general and railway budgets",
@@ -147,135 +118,10 @@ const GD_TOPICS = [
   "Instagram: Pros and cons",
   "Is India ready for space exploration?",
   "Leaders are born or made?",
-  "Placement scenario in India",
-   "Problems unite us, religion divides us",
-  "Can India dream of hosting the Olympics?",
-  "Emotional Intelligence vs Intelligence Quotient",
-  "Economic growth is more important than ecological protection",
-  "Fighting corruption is a mirage unless top public figures are punished",
-  "Non-execution of the GST bill and its political impact",
-  "Is the youth of India confident or confused?",
-  "Youth participation in politics",
-  "Chinese goods vs Indian goods",
-  "Is compulsory attendance really needed in colleges?",
-  "Should the national anthem be played in cinema halls?",
-  "Is it fair to exempt political parties from income tax investigation?",
-  "Does India need a complete overhaul of its education system?",
-  "One Nation One Election: Pros and cons",
-  "Should Hindi be the official language of India?",
-  "India as a manufacturing hub: Dream or practical reality?",
-  "Polythene bags must be banned",
-  "Do we really need smart cities?",
-  "Impact of technology on the banking sector",
-  "Is Reliance Jio a sustainable business model in India?",
-  "Should social media platforms clarify content removal policies?",
-  "Demonetization: Corruption uprooted or just transformed?",
-  "Impact of demonetization on common citizens",
-  "Are digital payments secure enough for a cashless economy?",
-  "Extra-curricular activities should be compulsory in schools",
-  "Marriage is a social trap",
-  "The internet is more hype than help",
-  "Legalizing gambling in India",
-  "The education system needs serious reforms",
-  "India is not serious about saving wildlife and the environment",
-  "Our culture is decaying",
-  "Social evils and changing Indian society",
-  "Is remixing a good trend in music?",
-  "Influence of online social networks on youth",
-  "Should prostitution be legalized in India?",
-  "Individual freedom vs civil society",
-  "Classical music heritage vs growing pop culture",
-  "Should violence and crime be censored in films and television?",
-  "Women empowerment and its impact on Indian families",
-  "Women in defense services: Challenges and opportunities",
-  "Does moral policing really protect Indian culture?",
-  "Media censorship: Need of the hour?",
-  "Should rapists be given the death penalty?",
-  "Foreign television channels and cultural impact",
-  "Censorship in movies and its effect on society",
-  "Should dance bars be banned?",
-  "Declining morals and values in Indian society",
-  "Are films corrupting Indian youth?",
-  "Are beauty contests degrading womanhood?",
-  "Love marriages vs arranged marriages",
-  "Effects of television on youth",
-  "Should smoking be banned completely?",
-  "Religion should not be mixed with politics",
-  "Terrorism in India: Causes and solutions",
-
-  /* ---------------- ABSTRACT GD TOPICS ---------------- */
-
-  "Black",
-  "White",
-  "Grey",
-  "Red vs Green",
-  "The Power of Silence",
-  "Change is the only constant",
-  "Freedom is a myth",
-  "Success has many fathers, failure is an orphan",
-  "Means are more important than ends",
-  "Leader or follower",
-  "Wisdom vs knowledge",
-  "Dreams convert into reality through action",
-  "Reality is often disappointing",
-  "Time and tide wait for none",
-  "The road less traveled",
-  "Comfort zone is the enemy of growth",
-  "Nothing succeeds like success",
-  "Vision without execution is hallucination",
-  "The Nostradamus Code and the possibility of World War III",
-  "Just as we have smoke-free zones, should we have child-free zones?",
-  "Up the Down Staircase",
-  "When I woke up this morning, I realized",
-  "Group task: How can we bring Mount Everest to India?",
-  "If I were the Finance Minister of India",
-  "If I were the Prime Minister of India",
-  "The wheel of time keeps turning",
-  "All work and no play makes Jack a dull boy",
-  "Nice guys finish last",
-  "Too much honesty can be harmful",
-  "Cleanliness as a fundamental responsibility of Indian citizens",
-  "Men are from Mars, women are from Venus",
-  "In today’s world, nothing is certain except death and taxes",
-  "Good things always come from good thinking",
-  "Is God male?",
-  "Is love precious or poisonous?",
-  "There is no right way of doing the wrong thing",
-  "Let sleeping dogs lie",
-  "Food comes first, ethics later",
-  "Rules are meant to be broken",
-  "Every cloud has a silver lining",
-  "Do beauty and brains go together?",
-  "A ship docked in harbor cannot face storms",
-
-  /* -------- EDUCATION & MANAGEMENT GD TOPICS -------- */
-
-  "How effective are Indian B-Schools?",
-  "Should management education be subsidized?",
-  "Private educational institutions: Good or bad?",
-  "Is reservation in higher education the only solution for social equality?",
-  "E-learning as a substitute for classroom learning",
-  "Entry of foreign universities in India",
-  "Should the government invest more in IITs and IIMs or in primary and secondary education?",
-  "Privatization of higher education",
-  "Government control in higher education: Necessary or interference?",
-  "Do we really need education to be successful?",
-  "Have examinations killed real education?",
-  "Advantages of co-education",
-
-  /* -------- ABSTRACT & CREATIVE GD TOPICS -------- */
-
-  "The wheel is always turning",
-  "Thinking beyond boundaries",
-  "Life is a game of choices",
-  "Success demands sacrifice",
-  "Comfort zones limit growth",
-  "Dreams without action remain illusions",
-  "Truth is stranger than fiction",
-  "Change begins with self",
-  "Risk is better than regret"
-
+  "Placement scenario in India"
 ];
+
+
 
 /* --------------------------------------------------
    CATEGORY MAPPING (AUTO-DETECTED)
@@ -378,6 +224,8 @@ Topic: ${topic}
   }
 });
 
+
+
 /* --------------------------------------------------
    API 2️⃣: CONTINUE GD
 --------------------------------------------------- */
@@ -431,6 +279,9 @@ Rules:
     res.status(500).json({ error: "GD turn failed" });
   }
 });
+
+
+
 
 /* --------------------------------------------------
    START SERVER
