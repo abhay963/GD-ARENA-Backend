@@ -39,19 +39,7 @@ Framework : Express.js
 AI Layer : Agent-based discussion logic
 API Type : RESTful APIs
 
-yaml
-Copy code
 
----
-
-## 🔁 System Role
-
-- Acts as the **brain of GD Arena**
-- Controls **discussion flow & agent responses**
-- Ensures **structured, timed GD sessions**
-- Integrates seamlessly with frontend UI
-
----
 
 ## 🔗 Related Project
 
@@ -67,17 +55,6 @@ Built to support:
 - Communication skill practice  
 - AI-simulated discussion environments  
 
----
 
-## 🤝 Contributions
-
-Suggestions, optimizations, and improvements are welcome 🙌  
-This backend is part of a **full-stack, interview-ready project**.
-
-<div align="center">
-
-<img src="https://media.giphy.com/media/f3iwJFOVOwuy7K6FFw/giphy.gif" width="260"/>
-
-### Powering Real Conversations with Logic ⚙️🔥
 
 </div>
