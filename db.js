@@ -4,7 +4,7 @@ dotenv.config({ path: "./.env" }); // 🔥 EXPLICIT PATH FIX
 import pkg from "pg";
 const { Pool } = pkg;
 
-console.log("USING DATABASE_URL =", process.env.DATABASE_URL);
+
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
