@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
+import { updateUserStreak, getUserStreak } from "./streakService.js";
 
 dotenv.config();
 
@@ -319,6 +320,17 @@ Rules:
 });
 
 
+
+app.post("/api/streak/update", async (req, res) => {
+  const { uid, email } = req.body;
+  const streak = await updateUserStreak(uid, email);
+  res.json({ streak });
+});
+
+app.get("/api/streak/:uid", async (req, res) => {
+  const streak = await getUserStreak(req.params.uid);
+  res.json({ streak });
+});
 
 
 /* --------------------------------------------------
