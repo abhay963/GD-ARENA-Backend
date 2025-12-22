@@ -62,11 +62,34 @@ export async function updateUserStreak(uid, email) {
 
 
 export async function getUserStreak(uid) {
+  const today = new Date().toISOString().split("T")[0];
+
   const { rows } = await pool.query(
-    "SELECT current_streak FROM user_streaks WHERE uid=$1",
+    "SELECT * FROM user_streaks WHERE uid=$1",
     [uid]
   );
 
   if (rows.length === 0) return 0;
-  return rows[0].current_streak ?? 0;
+
+  const user = rows[0];
+  if (!user.last_active_date) return 0;
+
+  const diff = differenceInCalendarDays(
+    new Date(today),
+    new Date(user.last_active_date)
+  );
+
+  // 🔥 MISSED EVEN ONE DAY → STREAK RESET TO 0
+  if (diff >= 2) {
+    await pool.query(
+      `UPDATE user_streaks
+       SET current_streak = 0
+       WHERE uid = $1`,
+      [uid]
+    );
+    return 0;
+  }
+
+  return user.current_streak;
 }
+
