@@ -456,7 +456,7 @@ User just said:
 ${userSpeech}
 
 Rules:
-- 6-10 lines max
+- 15-20 lines max
 - Maintain character consistency
 - Player 1: aggressive, challenges viewpoints
 - Player 2: analytical, provides balanced perspective
