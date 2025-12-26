@@ -457,11 +457,17 @@ ${userSpeech}
 
 Rules:
 - 13-16 lines max
-- Maintain character consistency
-- Player 1: aggressive, challenges viewpoints
-- Player 2: analytical, provides balanced perspective
-- Reference user's points when relevant
-- Keep the discussion flowing
+- Player 1: strong stance, questions assumptions, pushes the debate
+- Player 2: analytical, connects points, structures arguments clearly
+- Respond to the user directly when relevant
+- Use practical examples, short statistics, or quotes (not overused)
+- Explore multiple angles: ethical, technical, economic, social, global, future impact
+- Suggest solutions instead of only pointing problems
+- Avoid repetition or generic filler lines
+- Do NOT summarize — keep the discussion moving forward
+
+Naturalness:
+They should sound like actual GD participants on campus — thoughtful, curious, sometimes challenging, but always respectful.
 - Avoid repetition
 `;
 
@@ -550,6 +556,6 @@ app.get("/api/streak/:uid", async (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Enhanced GD Backend running on port ${PORT}`);
-  console.log(`📚 Total topics available: ${GD_TOPICS.length}`);
-  console.log(`🎯 Topic variety: ${Object.keys([...new Set(GD_TOPICS.map(t => detectCategory(t)))]).length} categories`);
+  console.log(`Hey Abhay Back Again`);
+
 });
