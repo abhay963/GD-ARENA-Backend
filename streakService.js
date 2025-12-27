@@ -1,6 +1,7 @@
 import { pool } from "./db.js";
 import { differenceInCalendarDays } from "date-fns";
 
+// ▶️ Call this whenever user completes today's activity
 export async function updateUserStreak(uid, email) {
   const today = new Date().toISOString().split("T")[0];
 
@@ -9,7 +10,7 @@ export async function updateUserStreak(uid, email) {
     [uid]
   );
 
-  // First-time user
+  // First time user
   if (rows.length === 0) {
     await pool.query(
       `INSERT INTO user_streaks
@@ -22,7 +23,7 @@ export async function updateUserStreak(uid, email) {
 
   const user = rows[0];
 
-  // 🔥 HANDLE NULL DATE
+  // If date is missing (shouldn't happen but safe)
   if (!user.last_active_date) {
     await pool.query(
       `UPDATE user_streaks
@@ -42,9 +43,14 @@ export async function updateUserStreak(uid, email) {
 
   let newStreak = user.current_streak;
 
+  // Same day — don't change streak
+  if (diff === 0) return user.current_streak;
+
+  // Consecutive day → increase streak
   if (diff === 1) newStreak++;
-  else if (diff > 1) newStreak = 1;
-  else return user.current_streak;
+
+  // Missed 1+ days → reset and start at 1
+  if (diff >= 2) newStreak = 1;
 
   const maxStreak = Math.max(newStreak, user.max_streak);
 
@@ -61,6 +67,7 @@ export async function updateUserStreak(uid, email) {
 }
 
 
+// ▶️ Call this when you only want to SHOW the streak
 export async function getUserStreak(uid) {
   const today = new Date().toISOString().split("T")[0];
 
@@ -79,8 +86,8 @@ export async function getUserStreak(uid) {
     new Date(user.last_active_date)
   );
 
-  // 🔥 MISSED EVEN ONE DAY → STREAK RESET TO 0
-  if (diff >= 2) {
+  // ❌ Missed even 1 day → streak becomes 0 (like LeetCode)
+  if (diff >= 1) {
     await pool.query(
       `UPDATE user_streaks
        SET current_streak = 0
@@ -92,4 +99,3 @@ export async function getUserStreak(uid) {
 
   return user.current_streak;
 }
-
